@@ -1,0 +1,54 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="EtiquetasArca.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="WindowLocation" Type="System.Drawing.Point" Scope="User">
+      <Value Profile="(Default)">0, 0</Value>
+    </Setting>
+    <Setting Name="CompanyNameLine1" Type="System.String" Scope="User">
+      <Value Profile="(Default)">LAS MEJORES LAVADORAS, S.A. de C.V.</Value>
+    </Setting>
+    <Setting Name="CompanyNameLine2" Type="System.String" Scope="User">
+      <Value Profile="(Default)">R.F.C.: MLA-031024-CK1</Value>
+    </Setting>
+    <Setting Name="FiscalAddressLine1" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Calle Félix Merino # 2011</Value>
+    </Setting>
+    <Setting Name="FiscalAddressLine2" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Oasis Revolución 2</Value>
+    </Setting>
+    <Setting Name="FiscalAddressLine3" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Cd. Juárez, Chih. C.P. 32674</Value>
+    </Setting>
+    <Setting Name="AddressLine1" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Av. Juárez # 4710</Value>
+    </Setting>
+    <Setting Name="AddressLine2" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Col. Arquitectos</Value>
+    </Setting>
+    <Setting Name="AddressLine3" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Chihuahua, Chih. C.P. 31000</Value>
+    </Setting>
+    <Setting Name="ProductName" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="Brand" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="Model" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="Series" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="SerialNumberStart" Type="System.UInt32" Scope="User">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="SerialNumberEnd" Type="System.UInt32" Scope="User">
+      <Value Profile="(Default)">6</Value>
+    </Setting>
+    <Setting Name="Specs" Type="System.String" Scope="User">
+      <Value Profile="(Default)">127 V ~      60  Hz     9,8  A</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

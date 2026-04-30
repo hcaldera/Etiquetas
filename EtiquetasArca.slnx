@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="EtiquetasArca/EtiquetasArca.csproj" />
+  <Project Path="EtiquetasArcaInstaller/EtiquetasArcaInstaller.vdproj" Type="Installer">
+    <Build />
+  </Project>
+</Solution>
