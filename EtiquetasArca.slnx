@@ -3,4 +3,5 @@
   <Project Path="EtiquetasArcaInstaller/EtiquetasArcaInstaller.vdproj" Type="Installer">
     <Build />
   </Project>
+  <Project Path="LicenseGenerator/LicenseGenerator.csproj" Id="5472e117-d26b-4420-bb07-6a2380411333" />
 </Solution>
