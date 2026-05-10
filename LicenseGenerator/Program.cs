@@ -1,44 +1,35 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 
 namespace LicenseGenerator
 {
     internal class Program
     {
+        public const int TRIAL_DAYS = 7;
         static void Main(string[] args)
         {
-            bool generate;
-            bool generateKey;
-            string type;
-            string version;
-            DateTime? issuedDate;
-            DateTime? expiryDate;
-            string machineId;
             LicensePayload payload = new LicensePayload();
 
             var options = CommandLineOptions.ParseArgs(args ?? Array.Empty<string>());
 
-            if (options.ContainsKey("help") || options.ContainsKey("h") || options.Count == 0)
+            if ((CommandLineOptions.GetOption(options, "help", "h") == "true") || options.Count == 0)
             {
                 CommandLineOptions.PrintUsage();
                 return;
             }
 
-            generate = options.ContainsKey("generate") || options.ContainsKey("g");
-            generateKey = options.ContainsKey("k") || options.ContainsKey("key");
-            type = CommandLineOptions.GetOption(options, "type", "t");
-            version = CommandLineOptions.GetOption(options, "version", "v");
-            issuedDate = ((CommandLineOptions.GetOption(options, "issued", "i") is string issuedStr) &&
-                          DateTime.TryParse(issuedStr, out var issued)) ?
-                          issued : (DateTime?)null;
-            expiryDate = ((CommandLineOptions.GetOption(options, "expiry", "e") is string expiryStr) &&
-                          DateTime.TryParse(expiryStr, out var expiry)) ?
-                          expiry : (DateTime?)null;
-            machineId = CommandLineOptions.GetOption(options, "machine", "m");
+            bool generate = CommandLineOptions.GetOption(options, "generate", "g") == "true";
+            bool generateKey = CommandLineOptions.GetOption(options, "key", "k") == "true";
+            string type = CommandLineOptions.GetOption(options, "type", "t");
+            string version = CommandLineOptions.GetOption(options, "version", "v");
+            string issuedStr = CommandLineOptions.GetOption(options, "issued", "i");
+            string expiryStr = CommandLineOptions.GetOption(options, "expiry", "e");
+            string machineId = CommandLineOptions.GetOption(options, "machine", "m");
 
             if (generateKey)
             {
@@ -47,56 +38,95 @@ namespace LicenseGenerator
 
             if (generate)
             {
+                /* Type */
                 if (string.IsNullOrWhiteSpace(type))
                 {
-                    payload.Type = "Trial";
+                    payload.Type = "trial";
                 }
                 else
                 {
-                    switch (type)
+                    switch (type.ToLower())
                     {
-                        case "Full":
-                        case "Pro":
-                        case "Enterprise":
-                        case "Trial":
-                            payload.Type = type;
+                        case "full":
+                        case "pro":
+                        case "enterprise":
+                        case "trial":
+                            payload.Type = type.ToLower();
                             break;
                         default:
-                            payload.Type = "Trial";
-                            break;
+                            Console.WriteLine("Error: Invalid license type. Allowed values are: full, pro, enterprise, trial.");
+                            CommandLineOptions.PrintUsage();
+                            return;
                     }
                 }
 
-                if (string.IsNullOrWhiteSpace(version))
-                {
-                    payload.Version = "0.1.0";
-                }
-                else
+                /* Version */
+                if (IsVersionValid(version))
                 {
                     payload.Version = version;
                 }
+                else
+                {
+                    Console.WriteLine("Error: Invalid version format. Expected format: major.minor.patch (e.g., 1.0.0).");
+                    CommandLineOptions.PrintUsage();
+                    return;
+                }
 
-                if (null == issuedDate)
+                /* Issued date */
+                if (!string.IsNullOrWhiteSpace(issuedStr))
+                {
+                    if (DateTime.TryParse(issuedStr, out var issued))
+                    {
+                        payload.IssuedDate = issued;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Error: Issued date invalid.");
+                        return;
+                    }
+                }
+                else
                 {
                     payload.IssuedDate = DateTime.Today;
                 }
-                else
-                {
-                    payload.IssuedDate = issuedDate.Value;
-                }
 
-                if (string.Compare(payload.Type, "Trial", StringComparison.OrdinalIgnoreCase) == 0)
+                /* Expiry date */
+                if ((string.Compare(payload.Type, "trial") == 0) && string.IsNullOrWhiteSpace(expiryStr))
                 {
-                    payload.ExpiryDate = DateTime.Today.AddDays(RsaHelper.TRIAL_DAYS);
+                    payload.ExpiryDate = payload.IssuedDate.AddDays(TRIAL_DAYS);
+                }
+                else if (!string.IsNullOrWhiteSpace(expiryStr))
+                {
+                    if (DateTime.TryParse(expiryStr, out var expiry))
+                    {
+                        if (expiry <= payload.IssuedDate)
+                        {
+                            Console.WriteLine("Error: Expiry date must be greater than issued date.");
+                            return;
+                        }
+                        payload.ExpiryDate = expiry;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Error: Expiry date invalid.");
+                        return;
+                    }
                 }
                 else
                 {
-                    payload.ExpiryDate = expiryDate.Value;
+                    payload.ExpiryDate = null; // No expiry
                 }
 
                 payload.MachineId = machineId;
 
                 GenerateLicense(payload);
+            }
+            else
+            {
+                if (!generateKey)
+                {
+                    CommandLineOptions.PrintUsage();
+                }
             }
         }
 
@@ -125,11 +155,12 @@ namespace LicenseGenerator
             RsaHelper.LoadRsaKey(true); // Load private key for signing
 
             Console.WriteLine("Generating license with the following details:");
+            Console.WriteLine($"License ID: {payload.LicenseId = GenerateLicenseId()}");
             Console.WriteLine($"Type: {payload.Type}");
-            Console.WriteLine($"Version: {payload.Version}");
+            Console.WriteLine($"Version: {payload.Version ?? "null"}");
             Console.WriteLine($"Issued Date: {payload.IssuedDate}");
-            Console.WriteLine($"Expiry Date: {(payload.ExpiryDate) ?.ToString() ?? "null"}");
-            Console.WriteLine($"Machine ID: {(payload.MachineId) ?? "null"}");
+            Console.WriteLine($"Expiry Date: {payload.ExpiryDate?.ToString() ?? "null"}");
+            Console.WriteLine($"Machine ID: {payload.MachineId ?? "null"}");
 
             string json = JsonConvert.SerializeObject(payload, Formatting.Indented);
             byte[] data = Encoding.UTF8.GetBytes(json);
@@ -155,17 +186,19 @@ namespace LicenseGenerator
                 Console.WriteLine("Invalid license format.");
                 return;
             }
+
             try
             {
                 byte[] data = Convert.FromBase64String(parts[0]);
-                byte[] signature = Convert.FromBase64String(parts[1]);
                 string json = Encoding.UTF8.GetString(data);
+                byte[] signature = Convert.FromBase64String(parts[1]);
+
                 if (RsaHelper.RsaVerify(json, signature))
                 {
-                    var payload = JsonConvert.DeserializeObject<LicensePayload>(json);
-                    Console.WriteLine("License is valid. Payload:");
-                    Console.WriteLine(JsonConvert.SerializeObject(payload, Formatting.Indented));
                     File.WriteAllText("license.lic", licenseContent);
+                    Console.WriteLine("License is valid.");
+                    Console.WriteLine();
+                    Console.WriteLine("License saved to license.lic");
                 }
                 else
                 {
@@ -177,10 +210,34 @@ namespace LicenseGenerator
                 Console.WriteLine("Error validating license: " + ex.Message);
             }
         }
+
+        private static string GenerateLicenseId()
+        {
+            byte[] bytes = new byte[6]; // 48 bits
+
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(bytes);
+            }
+
+            string hex = BitConverter.ToString(bytes).Replace("-", "").ToUpper(); // 12 hex chars
+
+            return $"{hex.Substring(0, 4)}-{hex.Substring(4, 4)}-{hex.Substring(8, 4)}"; // Format as XXXX-XXXX-XXXX
+        }
+
+        private static bool IsVersionValid(string version)
+        {
+            if (string.IsNullOrWhiteSpace(version))
+                return true; // treat null or empty as valid
+            // Simple regex for semantic versioning: major.minor.patch
+            var semverRegex = new Regex(@"^(\d+|\*)\.(\d+|\*)\.(\d+|\*)$");
+            return semverRegex.IsMatch(version);
+        }
     }
 
     internal class LicensePayload
     {
+        public string LicenseId { get; set; }
         public string Type { get; set; }
         public string Version { get; set; }
         public DateTime IssuedDate { get; set; }
@@ -190,8 +247,6 @@ namespace LicenseGenerator
 
     internal static class RsaHelper
     {
-        public const int TRIAL_DAYS = 7;
-
         private static RSACryptoServiceProvider _rsa;
 
         public static void LoadRsaKey(bool privateKey)
