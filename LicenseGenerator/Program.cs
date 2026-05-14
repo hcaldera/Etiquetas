@@ -67,7 +67,7 @@ namespace LicenseGenerator
                 }
                 else
                 {
-                    Console.WriteLine("Error: Invalid version format. Expected format: major.minor.patch (e.g., 1.0.0).");
+                    Console.WriteLine("Error: Invalid version format. Expected format: major.minor.build.revision (e.g., 1.0.*.*).");
                     CommandLineOptions.PrintUsage();
                     return;
                 }
@@ -229,8 +229,8 @@ namespace LicenseGenerator
         {
             if (string.IsNullOrWhiteSpace(version))
                 return true; // treat null or empty as valid
-            // Simple regex for semantic versioning: major.minor.patch
-            var semverRegex = new Regex(@"^(\d+|\*)\.(\d+|\*)\.(\d+|\*)$");
+            // Simple regex for semantic versioning: major.minor.build.revision where each part is a number or *
+            var semverRegex = new Regex(@"^(\d+|\*)\.(\d+|\*)\.(\d+|\*)\.(\d+|\*)$");
             return semverRegex.IsMatch(version);
         }
     }
@@ -396,7 +396,7 @@ namespace LicenseGenerator
             Console.WriteLine("  -g, --generate      Generate license file");
             Console.WriteLine("  -k, --key           Generate a new RSA key");
             Console.WriteLine("  -t, --type <type>   License Type");
-            Console.WriteLine("  -v, --version <ver> License Version");
+            Console.WriteLine("  -v, --version <ver> License Version (major.minor.build.revision, each part can be a number or *)");
             Console.WriteLine("  -i, --issued <date> Issued date (YYYY-MM-DD)");
             Console.WriteLine("  -e, --expiry <date> Expiry date (YYYY-MM-DD)");
             Console.WriteLine("  -m, --machine <id>  Machine ID");
@@ -404,11 +404,12 @@ namespace LicenseGenerator
             Console.WriteLine("Examples:");
             Console.WriteLine("  LicenseGenerator -k");
             Console.WriteLine("  LicenseGenerator -g");
-            Console.WriteLine("  LicenseGenerator -g -t Pro -v 1.0.0 -i 2024-01-01 -e 2025-01-01 -m MACHINEID");
-            Console.WriteLine("  LicenseGenerator -g -t Pro -v 1.0.0 -i 2024-01-01 -e 2025-01-01");
-            Console.WriteLine("  LicenseGenerator -g -t Pro -v 1.0.0 -i 2024-01-01");
-            Console.WriteLine("  LicenseGenerator -g -t Pro -v 1.0.0 -e 2025-01-01");
-            Console.WriteLine("  LicenseGenerator -g -t Pro -v 1.0.0");
+            Console.WriteLine("  LicenseGenerator -g -t Pro -v 1.0.0.0 -i 2024-01-01 -e 2025-01-01 -m MACHINEID");
+            Console.WriteLine("  LicenseGenerator -g -t Pro -v 1.*.*.* -i 2024-01-01 -e 2025-01-01");
+            Console.WriteLine("  LicenseGenerator -g -t Pro -i 2024-01-01");
+            Console.WriteLine("  LicenseGenerator -g -t Pro -e 2025-01-01");
+            Console.WriteLine("  LicenseGenerator -g -t Pro -v 1.*.*.*");
+            Console.WriteLine("  LicenseGenerator -g -t Pro -v 1.0.0.0");
             Console.WriteLine("  LicenseGenerator -g -t Pro");
         }
     }

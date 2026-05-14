@@ -55,6 +55,7 @@
             BtnSave = new ToolStripButton();
             BtnReset = new ToolStripButton();
             BtnClear = new ToolStripButton();
+            BtnLicenseManager = new ToolStripButton();
             NumSerialNumberStart = new NumericUpDown();
             NumSerialNumberEnd = new NumericUpDown();
             ToolStripMainMenu.SuspendLayout();
@@ -257,7 +258,7 @@
             // 
             // ToolStripMainMenu
             // 
-            ToolStripMainMenu.Items.AddRange(new ToolStripItem[] { BtnEdit, BtnSave, BtnReset, BtnClear });
+            ToolStripMainMenu.Items.AddRange(new ToolStripItem[] { BtnEdit, BtnSave, BtnReset, BtnClear, BtnLicenseManager });
             ToolStripMainMenu.Location = new Point(0, 0);
             ToolStripMainMenu.Name = "ToolStripMainMenu";
             ToolStripMainMenu.Size = new Size(424, 25);
@@ -306,6 +307,18 @@
             BtnClear.Size = new Size(23, 22);
             BtnClear.Text = "Limpiar (Doble click)";
             BtnClear.DoubleClick += BtnClear_DoubleClick;
+            // 
+            // BtnLicenseManager
+            // 
+            BtnLicenseManager.Alignment = ToolStripItemAlignment.Right;
+            BtnLicenseManager.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            BtnLicenseManager.DoubleClickEnabled = true;
+            BtnLicenseManager.Image = Properties.Resources.License;
+            BtnLicenseManager.ImageTransparentColor = Color.Magenta;
+            BtnLicenseManager.Name = "BtnLicenseManager";
+            BtnLicenseManager.Size = new Size(23, 22);
+            BtnLicenseManager.Text = "Manejador de licencias (Doble click)";
+            BtnLicenseManager.DoubleClick += BtnLicenseManager_DoubleClick;
             // 
             // NumSerialNumberStart
             // 
@@ -398,5 +411,6 @@
         private NumericUpDown NumSerialNumberEnd;
         private ToolStripButton BtnReset;
         private ToolStripButton BtnClear;
+        private ToolStripButton BtnLicenseManager;
     }
 }

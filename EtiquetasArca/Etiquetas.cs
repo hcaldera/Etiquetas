@@ -27,37 +27,67 @@ namespace EtiquetasArca
         private bool Edited = false;
         private bool ConfirmedClosed = false;
 
+        private readonly LicenseManager licenseManager;
+
         public Etiquetas()
         {
             InitializeComponent();
 
-            CompanyLine1 = Properties.Settings.Default.CompanyNameLine1;
-            CompanyLine2 = Properties.Settings.Default.CompanyNameLine2;
-            FiscalAddressLine1 = Properties.Settings.Default.FiscalAddressLine1;
-            FiscalAddressLine2 = Properties.Settings.Default.FiscalAddressLine2;
-            FiscalAddressLine3 = Properties.Settings.Default.FiscalAddressLine3;
-            AddressLine1 = Properties.Settings.Default.AddressLine1;
-            AddressLine2 = Properties.Settings.Default.AddressLine2;
-            AddressLine3 = Properties.Settings.Default.AddressLine3;
-            ImpProductName = Properties.Settings.Default.ProductName;
-            Brand = Properties.Settings.Default.Brand;
-            Model = Properties.Settings.Default.Model;
-            Series = Properties.Settings.Default.Series;
-            SerialNumberStart = Properties.Settings.Default.SerialNumberStart;
-            SerialNumberEnd = Properties.Settings.Default.SerialNumberEnd;
-            Specs = Properties.Settings.Default.Specs;
-            /* Initialize GUI */
-            TxtCompany.Text = $"{CompanyLine1}\r\n{CompanyLine2}";
-            TxtFiscalAddress.Text = $"{FiscalAddressLine1}\r\n{FiscalAddressLine2}\r\n{FiscalAddressLine3}";
-            TxtAddress.Text = $"{AddressLine1}\r\n{AddressLine2}\r\n{AddressLine3}";
-            CboProduct.Text = ImpProductName;
-            CboBrand.Text = Brand;
-            TxtModel.Text = Model;
-            TxtSeries.Text = Series;
-            NumSerialNumberStart.Text = SerialNumberStart.ToString();
-            NumSerialNumberEnd.Text = SerialNumberEnd.ToString();
-            TxtSpecs.Text = Specs;
-            this.Location = Properties.Settings.Default.WindowLocation;
+            licenseManager = new LicenseManager();
+
+
+            if (licenseManager.LicenseOK && licenseManager.InstallationOK)
+            {
+                CompanyLine1 = Properties.Settings.Default.CompanyNameLine1;
+                CompanyLine2 = Properties.Settings.Default.CompanyNameLine2;
+                FiscalAddressLine1 = Properties.Settings.Default.FiscalAddressLine1;
+                FiscalAddressLine2 = Properties.Settings.Default.FiscalAddressLine2;
+                FiscalAddressLine3 = Properties.Settings.Default.FiscalAddressLine3;
+                AddressLine1 = Properties.Settings.Default.AddressLine1;
+                AddressLine2 = Properties.Settings.Default.AddressLine2;
+                AddressLine3 = Properties.Settings.Default.AddressLine3;
+                ImpProductName = Properties.Settings.Default.ProductName;
+                Brand = Properties.Settings.Default.Brand;
+                Model = Properties.Settings.Default.Model;
+                Series = Properties.Settings.Default.Series;
+                SerialNumberStart = Properties.Settings.Default.SerialNumberStart;
+                SerialNumberEnd = Properties.Settings.Default.SerialNumberEnd;
+                Specs = Properties.Settings.Default.Specs;
+
+                /* Initialize GUI */
+                TxtCompany.Text = $"{CompanyLine1}\r\n{CompanyLine2}";
+                TxtFiscalAddress.Text = $"{FiscalAddressLine1}\r\n{FiscalAddressLine2}\r\n{FiscalAddressLine3}";
+                TxtAddress.Text = $"{AddressLine1}\r\n{AddressLine2}\r\n{AddressLine3}";
+                CboProduct.Text = ImpProductName;
+                CboBrand.Text = Brand;
+                TxtModel.Text = Model;
+                TxtSeries.Text = Series;
+                NumSerialNumberStart.Text = SerialNumberStart.ToString();
+                NumSerialNumberEnd.Text = SerialNumberEnd.ToString();
+                TxtSpecs.Text = Specs;
+                this.Location = Properties.Settings.Default.WindowLocation;
+            }
+            else
+            {
+                BtnEdit.Enabled = false;
+                BtnSave.Enabled = false;
+                BtnClear.Enabled = false;
+                BtnReset.Enabled = false;
+                BtnCreateDocument.Enabled = false;
+
+                CboProduct.Enabled = false;
+                CboBrand.Enabled = false;
+                TxtModel.Enabled = false;
+                TxtSeries.Enabled = false;
+                NumSerialNumberStart.Enabled = false;
+                NumSerialNumberEnd.Enabled = false;
+                this.Text = "Aplicación sin licencia";
+
+                if (!licenseManager.InstallationOK)
+                {
+                    BtnLicenseManager.Enabled = false;
+                }
+            }
         }
 
         private void BtnEdit_Click(object sender, EventArgs e)
@@ -69,6 +99,18 @@ namespace EtiquetasArca
         {
             EnableEditing(false);
             Edited = true;
+        }
+
+        private void BtnLicenseManager_DoubleClick(object sender, EventArgs e)
+        {
+            if (IsProcessElevated())
+            {
+                licenseManager.ShowDialog(this);
+            }
+            else
+            {
+                RelaunchAsAdmin();
+            }
         }
 
         private void BtnClear_DoubleClick(object sender, EventArgs e)
@@ -229,32 +271,36 @@ namespace EtiquetasArca
             }
             else
             {
-                result = MessageBox.Show(
-                    "¿Segur@ que deseas salir?",
-                    "Confirmar salida",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question
-                    );
-                
-                if (Edited && (result == DialogResult.Yes))
+                result = DialogResult.Yes;
+                if (licenseManager.LicenseOK && licenseManager.InstallationOK)
                 {
-                    Properties.Settings.Default.CompanyNameLine1 = CompanyLine1 ?? _companyLine1;
-                    Properties.Settings.Default.CompanyNameLine2 = CompanyLine2 ?? _companyLine2;
-                    Properties.Settings.Default.FiscalAddressLine1 = FiscalAddressLine1 ?? _fiscalAddressLine1;
-                    Properties.Settings.Default.FiscalAddressLine2 = FiscalAddressLine2 ?? _fiscalAddressLine2;
-                    Properties.Settings.Default.FiscalAddressLine3 = FiscalAddressLine3 ?? _fiscalAddressLine3;
-                    Properties.Settings.Default.AddressLine1 = AddressLine1 ?? _addressLine1;
-                    Properties.Settings.Default.AddressLine2 = AddressLine2 ?? _addressLine2;
-                    Properties.Settings.Default.AddressLine3 = AddressLine3 ?? _addressLine3;
-                    Properties.Settings.Default.ProductName = ImpProductName ?? _productName;
-                    Properties.Settings.Default.Brand = Brand ?? _brand;
-                    Properties.Settings.Default.Model = Model ?? _model;
-                    Properties.Settings.Default.Series = Series ?? _series;
-                    Properties.Settings.Default.SerialNumberStart = SerialNumberStart;
-                    Properties.Settings.Default.SerialNumberEnd = SerialNumberEnd;
-                    Properties.Settings.Default.Specs = Specs ?? _specs;
-                    Properties.Settings.Default.WindowLocation = this.Location;
-                    Properties.Settings.Default.Save();
+                    result = MessageBox.Show(
+                        "¿Segur@ que deseas salir?",
+                        "Confirmar salida",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question
+                    );
+
+                    if (Edited && (result == DialogResult.Yes))
+                    {
+                        Properties.Settings.Default.CompanyNameLine1 = CompanyLine1 ?? _companyLine1;
+                        Properties.Settings.Default.CompanyNameLine2 = CompanyLine2 ?? _companyLine2;
+                        Properties.Settings.Default.FiscalAddressLine1 = FiscalAddressLine1 ?? _fiscalAddressLine1;
+                        Properties.Settings.Default.FiscalAddressLine2 = FiscalAddressLine2 ?? _fiscalAddressLine2;
+                        Properties.Settings.Default.FiscalAddressLine3 = FiscalAddressLine3 ?? _fiscalAddressLine3;
+                        Properties.Settings.Default.AddressLine1 = AddressLine1 ?? _addressLine1;
+                        Properties.Settings.Default.AddressLine2 = AddressLine2 ?? _addressLine2;
+                        Properties.Settings.Default.AddressLine3 = AddressLine3 ?? _addressLine3;
+                        Properties.Settings.Default.ProductName = ImpProductName ?? _productName;
+                        Properties.Settings.Default.Brand = Brand ?? _brand;
+                        Properties.Settings.Default.Model = Model ?? _model;
+                        Properties.Settings.Default.Series = Series ?? _series;
+                        Properties.Settings.Default.SerialNumberStart = SerialNumberStart;
+                        Properties.Settings.Default.SerialNumberEnd = SerialNumberEnd;
+                        Properties.Settings.Default.Specs = Specs ?? _specs;
+                        Properties.Settings.Default.WindowLocation = this.Location;
+                        Properties.Settings.Default.Save();
+                    }
                 }
             }
 
@@ -579,6 +625,69 @@ namespace EtiquetasArca
             catch (Exception ex)
             {
                 MessageBox.Show($"No se pudo abrir el archivo PDF: {ex.Message}", "Error al abrir PDF", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        public static bool IsProcessElevated()
+        {
+            bool isElevated;
+
+            try
+            {
+                using var identity = System.Security.Principal.WindowsIdentity.GetCurrent();
+                var principal = new System.Security.Principal.WindowsPrincipal(identity);
+                isElevated = principal.IsInRole(System.Security.Principal.WindowsBuiltInRole.Administrator);
+            }
+            catch
+            {
+                isElevated = false;
+            }
+
+            return isElevated;
+        }
+
+        public static void RelaunchAsAdmin()
+        {
+            try
+            {
+                DialogResult result = MessageBox.Show(
+                    "Para acceder al administrador de licencias, la aplicación debe ejecutarse con privilegios de administrador. ¿Deseas reiniciar la aplicación como administrador?",
+                    "Reiniciar como administrador",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question
+                    );
+
+                if (result == DialogResult.Yes)
+                {
+
+                    var processInfo = new System.Diagnostics.ProcessStartInfo
+                    {
+                        UseShellExecute = true,
+                        FileName = Application.ExecutablePath,
+                        Verb = "runas"
+                    };
+
+                    System.Diagnostics.Process.Start(processInfo);
+                    Application.Exit(); /* Ensure the current instance exits after launching the new one with elevated privileges. */
+                }
+            }
+            catch (System.ComponentModel.Win32Exception ex) when (ex.NativeErrorCode == 1223)
+            {
+                MessageBox.Show(
+                    "No se pudo iniciar el programa con privilegios de administrador porque se canceló la solicitud.",
+                    "Operación Cancelada",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"No se pudo iniciar el programa con privilegios de administrador.\r\n" +
+                    $"Por favor, inténtalo de nuevo y acepta la solicitud.\r\n" +
+                    $"Detalles del error: {ex.Message}",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
             }
         }
     }

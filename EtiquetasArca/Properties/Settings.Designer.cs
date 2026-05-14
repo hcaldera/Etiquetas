@@ -214,5 +214,23 @@ namespace EtiquetasArca.Properties {
                 this["Specs"] = value;
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute(@"<RSAKeyValue><Modulus>v3kCP6svDZT8cGX8h+bVUfCOFwjU6s+IqT+pIX3x0NHe0xqnpUMN93glKYEwJmynn6V6lhjMDt0Wqb+MD1DUQK+rajbZHT2jEEJzqSSoWPKf6+rO6J6AnQDB1DeEHKNw2wq2Po7CWJXF9+21jvADA4zYYvP1nTL8hMxo3bslZHCHD+v5INWZQdBBF3EF1RmsEiRGHVGBTfiMJyK7FIOqHEqKII6KepGCIRIuJXmWjhcFEf7Tlv6UmcSyiVGJ+bsWcJHsMwu0FHMV5grHk7oGIw4omSvkGLbaZwFPqySAJsiBRF7wBEEhhXYCBElnP5dAsa1klsXp4hpNq19TsuZVWQ==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>")]
+        public string PublicKey {
+            get {
+                return ((string)(this["PublicKey"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("2DFCF687-97B7-47D7-A1BF-B7044F76ED2E")]
+        public string CLSID {
+            get {
+                return ((string)(this["CLSID"]));
+            }
+        }
     }
 }

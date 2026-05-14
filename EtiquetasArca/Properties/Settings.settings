@@ -50,5 +50,11 @@
     <Setting Name="Specs" Type="System.String" Scope="User">
       <Value Profile="(Default)">127 V ~      60  Hz     9,8  A</Value>
     </Setting>
+    <Setting Name="PublicKey" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">&lt;RSAKeyValue&gt;&lt;Modulus&gt;v3kCP6svDZT8cGX8h+bVUfCOFwjU6s+IqT+pIX3x0NHe0xqnpUMN93glKYEwJmynn6V6lhjMDt0Wqb+MD1DUQK+rajbZHT2jEEJzqSSoWPKf6+rO6J6AnQDB1DeEHKNw2wq2Po7CWJXF9+21jvADA4zYYvP1nTL8hMxo3bslZHCHD+v5INWZQdBBF3EF1RmsEiRGHVGBTfiMJyK7FIOqHEqKII6KepGCIRIuJXmWjhcFEf7Tlv6UmcSyiVGJ+bsWcJHsMwu0FHMV5grHk7oGIw4omSvkGLbaZwFPqySAJsiBRF7wBEEhhXYCBElnP5dAsa1klsXp4hpNq19TsuZVWQ==&lt;/Modulus&gt;&lt;Exponent&gt;AQAB&lt;/Exponent&gt;&lt;/RSAKeyValue&gt;</Value>
+    </Setting>
+    <Setting Name="CLSID" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">2DFCF687-97B7-47D7-A1BF-B7044F76ED2E</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
