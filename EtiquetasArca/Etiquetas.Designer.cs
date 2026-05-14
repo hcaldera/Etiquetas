@@ -1,6 +1,6 @@
 ﻿namespace EtiquetasArca
 {
-    partial class FrmStickers
+    partial class Etiquetas
     {
         /// <summary>
         ///  Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmStickers));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Etiquetas));
             BtnCreateDocument = new Button();
             BtnExit = new Button();
             LblCompany = new Label();
@@ -292,7 +292,7 @@
             BtnReset.ImageTransparentColor = Color.Magenta;
             BtnReset.Name = "BtnReset";
             BtnReset.Size = new Size(23, 22);
-            BtnReset.Text = "Restaurar";
+            BtnReset.Text = "Restaurar (Doble click)";
             BtnReset.DoubleClick += BtnReset_DoubleClick;
             // 
             // BtnClear
@@ -304,7 +304,7 @@
             BtnClear.ImageTransparentColor = Color.Magenta;
             BtnClear.Name = "BtnClear";
             BtnClear.Size = new Size(23, 22);
-            BtnClear.Text = "Limpiar";
+            BtnClear.Text = "Limpiar (Doble click)";
             BtnClear.DoubleClick += BtnClear_DoubleClick;
             // 
             // NumSerialNumberStart
@@ -321,7 +321,7 @@
             NumSerialNumberEnd.Size = new Size(129, 23);
             NumSerialNumberEnd.TabIndex = 11;
             // 
-            // FrmStickers
+            // Etiquetas
             // 
             AcceptButton = BtnCreateDocument;
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -356,7 +356,7 @@
             MaximizeBox = false;
             MaximumSize = new Size(440, 475);
             MinimumSize = new Size(440, 475);
-            Name = "FrmStickers";
+            Name = "Etiquetas";
             StartPosition = FormStartPosition.Manual;
             Text = "Arca de la Frontera - Etiquetas";
             FormClosing += FrmEtiquetas_FormClosing;

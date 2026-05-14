@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="WindowLocation" Type="System.Drawing.Point" Scope="User">
-      <Value Profile="(Default)">0, 0</Value>
+      <Value Profile="(Default)">15, 15</Value>
     </Setting>
     <Setting Name="CompanyNameLine1" Type="System.String" Scope="User">
       <Value Profile="(Default)">LAS MEJORES LAVADORAS, S.A. de C.V.</Value>

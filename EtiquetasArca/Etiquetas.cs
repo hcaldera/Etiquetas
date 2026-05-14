@@ -1,69 +1,62 @@
 using EtiquetasArca.Properties;
-using Microsoft.VisualBasic;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Windows.Forms;
 
 namespace EtiquetasArca
 {
-    public partial class FrmStickers : Form
+    public partial class Etiquetas : Form
     {
-        private static string? companyLine1;
-        private static string? companyLine2;
-        private static string? fiscalAddressLine1;
-        private static string? fiscalAddressLine2;
-        private static string? fiscalAddressLine3;
-        private static string? addressLine1;
-        private static string? addressLine2;
-        private static string? addressLine3;
-        private static string? productName;
-        private static string? brand;
-        private static string? model;
-        private static string? series;
-        private static uint serialNumberStart;
-        private static uint serialNumberEnd;
-        private static string? specs;
+        private string CompanyLine1 = string.Empty;
+        private string CompanyLine2 = string.Empty;
+        private string FiscalAddressLine1 = string.Empty;
+        private string FiscalAddressLine2 = string.Empty;
+        private string FiscalAddressLine3 = string.Empty;
+        private string AddressLine1 = string.Empty;
+        private string AddressLine2 = string.Empty;
+        private string AddressLine3 = string.Empty;
+        private string ImpProductName = string.Empty;
+        private string Brand = string.Empty;
+        private string Model = string.Empty;
+        private string Series = string.Empty;
+        private uint SerialNumberStart = 0;
+        private uint SerialNumberEnd = 0;
+        private string Specs = string.Empty;
 
-        private static bool editing = false;
-        private static bool edited = false;
-        private static bool closed = false;
+        private bool Editing = false;
+        private bool Edited = false;
+        private bool ConfirmedClosed = false;
 
-        public FrmStickers()
+        public Etiquetas()
         {
             InitializeComponent();
 
-            companyLine1 = Properties.Settings.Default.CompanyNameLine1;
-            companyLine2 = Properties.Settings.Default.CompanyNameLine2;
-            fiscalAddressLine1 = Properties.Settings.Default.FiscalAddressLine1;
-            fiscalAddressLine2 = Properties.Settings.Default.FiscalAddressLine2;
-            fiscalAddressLine3 = Properties.Settings.Default.FiscalAddressLine3;
-            addressLine1 = Properties.Settings.Default.AddressLine1;
-            addressLine2 = Properties.Settings.Default.AddressLine2;
-            addressLine3 = Properties.Settings.Default.AddressLine3;
-            productName = Properties.Settings.Default.ProductName;
-            brand = Properties.Settings.Default.Brand;
-            model = Properties.Settings.Default.Model;
-            series = Properties.Settings.Default.Series;
-            serialNumberStart = Properties.Settings.Default.SerialNumberStart;
-            serialNumberEnd = Properties.Settings.Default.SerialNumberEnd;
-            specs = Properties.Settings.Default.Specs;
+            CompanyLine1 = Properties.Settings.Default.CompanyNameLine1;
+            CompanyLine2 = Properties.Settings.Default.CompanyNameLine2;
+            FiscalAddressLine1 = Properties.Settings.Default.FiscalAddressLine1;
+            FiscalAddressLine2 = Properties.Settings.Default.FiscalAddressLine2;
+            FiscalAddressLine3 = Properties.Settings.Default.FiscalAddressLine3;
+            AddressLine1 = Properties.Settings.Default.AddressLine1;
+            AddressLine2 = Properties.Settings.Default.AddressLine2;
+            AddressLine3 = Properties.Settings.Default.AddressLine3;
+            ImpProductName = Properties.Settings.Default.ProductName;
+            Brand = Properties.Settings.Default.Brand;
+            Model = Properties.Settings.Default.Model;
+            Series = Properties.Settings.Default.Series;
+            SerialNumberStart = Properties.Settings.Default.SerialNumberStart;
+            SerialNumberEnd = Properties.Settings.Default.SerialNumberEnd;
+            Specs = Properties.Settings.Default.Specs;
             /* Initialize GUI */
-            TxtCompany.Text = $"{companyLine1}\r\n{companyLine2}";
-            TxtFiscalAddress.Text = $"{fiscalAddressLine1}\r\n{fiscalAddressLine2}\r\n{fiscalAddressLine3}";
-            TxtAddress.Text = $"{addressLine1}\r\n{addressLine2}\r\n{addressLine3}";
-            CboProduct.Text = productName;
-            CboBrand.Text = brand;
-            TxtModel.Text = model;
-            TxtSeries.Text = series;
-            NumSerialNumberStart.Text = serialNumberStart.ToString();
-            NumSerialNumberEnd.Text = serialNumberEnd.ToString();
-            TxtSpecs.Text = specs;
+            TxtCompany.Text = $"{CompanyLine1}\r\n{CompanyLine2}";
+            TxtFiscalAddress.Text = $"{FiscalAddressLine1}\r\n{FiscalAddressLine2}\r\n{FiscalAddressLine3}";
+            TxtAddress.Text = $"{AddressLine1}\r\n{AddressLine2}\r\n{AddressLine3}";
+            CboProduct.Text = ImpProductName;
+            CboBrand.Text = Brand;
+            TxtModel.Text = Model;
+            TxtSeries.Text = Series;
+            NumSerialNumberStart.Text = SerialNumberStart.ToString();
+            NumSerialNumberEnd.Text = SerialNumberEnd.ToString();
+            TxtSpecs.Text = Specs;
             this.Location = Properties.Settings.Default.WindowLocation;
         }
 
@@ -75,38 +68,39 @@ namespace EtiquetasArca
         private void BtnSave_Click(object sender, EventArgs e)
         {
             EnableEditing(false);
-            edited = true;
+            Edited = true;
         }
 
         private void BtnClear_DoubleClick(object sender, EventArgs e)
         {
-            companyLine1 = Properties.Settings.Default.CompanyNameLine1;
-            companyLine2 = Properties.Settings.Default.CompanyNameLine2;
-            fiscalAddressLine1 = Properties.Settings.Default.FiscalAddressLine1;
-            fiscalAddressLine2 = Properties.Settings.Default.FiscalAddressLine2;
-            fiscalAddressLine3 = Properties.Settings.Default.FiscalAddressLine3;
-            addressLine1 = Properties.Settings.Default.AddressLine1;
-            addressLine2 = Properties.Settings.Default.AddressLine2;
-            addressLine3 = Properties.Settings.Default.AddressLine3;
-            productName = "";
-            brand = "";
-            model = "";
-            series = "";
-            serialNumberStart = Properties.Settings.Default.SerialNumberStart;
-            serialNumberEnd = Properties.Settings.Default.SerialNumberEnd;
-            specs = Properties.Settings.Default.Specs;
+            CompanyLine1 = Properties.Settings.Default.CompanyNameLine1;
+            CompanyLine2 = Properties.Settings.Default.CompanyNameLine2;
+            FiscalAddressLine1 = Properties.Settings.Default.FiscalAddressLine1;
+            FiscalAddressLine2 = Properties.Settings.Default.FiscalAddressLine2;
+            FiscalAddressLine3 = Properties.Settings.Default.FiscalAddressLine3;
+            AddressLine1 = Properties.Settings.Default.AddressLine1;
+            AddressLine2 = Properties.Settings.Default.AddressLine2;
+            AddressLine3 = Properties.Settings.Default.AddressLine3;
+            ImpProductName = "";
+            Brand = "";
+            Model = "";
+            Series = "";
+            SerialNumberStart = Properties.Settings.Default.SerialNumberStart;
+            SerialNumberEnd = Properties.Settings.Default.SerialNumberEnd;
+            Specs = Properties.Settings.Default.Specs;
+
             /* Update GUI */
-            TxtCompany.Text = $"{companyLine1}\r\n{companyLine2}";
-            TxtFiscalAddress.Text = $"{fiscalAddressLine1}\r\n{fiscalAddressLine2}\r\n{fiscalAddressLine3}";
-            TxtAddress.Text = $"{addressLine1}\r\n{addressLine2}\r\n{addressLine3}";
-            CboProduct.Text = productName;
-            CboBrand.Text = brand;
-            TxtModel.Text = model;
-            TxtSeries.Text = series;
-            NumSerialNumberStart.Text = serialNumberStart.ToString();
-            NumSerialNumberEnd.Text = serialNumberEnd.ToString();
-            TxtSpecs.Text = specs;
-            edited = true;
+            TxtCompany.Text = $"{CompanyLine1}\r\n{CompanyLine2}";
+            TxtFiscalAddress.Text = $"{FiscalAddressLine1}\r\n{FiscalAddressLine2}\r\n{FiscalAddressLine3}";
+            TxtAddress.Text = $"{AddressLine1}\r\n{AddressLine2}\r\n{AddressLine3}";
+            CboProduct.Text = ImpProductName;
+            CboBrand.Text = Brand;
+            TxtModel.Text = Model;
+            TxtSeries.Text = Series;
+            NumSerialNumberStart.Text = SerialNumberStart.ToString();
+            NumSerialNumberEnd.Text = SerialNumberEnd.ToString();
+            TxtSpecs.Text = Specs;
+            Edited = true;
         }
 
         private void BtnReset_DoubleClick(object sender, EventArgs e)
@@ -122,53 +116,54 @@ namespace EtiquetasArca
                 Properties.Settings.Default.Reset();
                 Properties.Settings.Default.Save();
 
-                companyLine1 = Properties.Settings.Default.CompanyNameLine1;
-                companyLine2 = Properties.Settings.Default.CompanyNameLine2;
-                fiscalAddressLine1 = Properties.Settings.Default.FiscalAddressLine1;
-                fiscalAddressLine2 = Properties.Settings.Default.FiscalAddressLine2;
-                fiscalAddressLine3 = Properties.Settings.Default.FiscalAddressLine3;
-                addressLine1 = Properties.Settings.Default.AddressLine1;
-                addressLine2 = Properties.Settings.Default.AddressLine2;
-                addressLine3 = Properties.Settings.Default.AddressLine3;
-                productName = Properties.Settings.Default.ProductName;
-                brand = Properties.Settings.Default.Brand;
-                model = Properties.Settings.Default.Model;
-                series = Properties.Settings.Default.Series;
-                serialNumberStart = Properties.Settings.Default.SerialNumberStart;
-                serialNumberEnd = Properties.Settings.Default.SerialNumberEnd;
-                specs = Properties.Settings.Default.Specs;
+                CompanyLine1 = Properties.Settings.Default.CompanyNameLine1;
+                CompanyLine2 = Properties.Settings.Default.CompanyNameLine2;
+                FiscalAddressLine1 = Properties.Settings.Default.FiscalAddressLine1;
+                FiscalAddressLine2 = Properties.Settings.Default.FiscalAddressLine2;
+                FiscalAddressLine3 = Properties.Settings.Default.FiscalAddressLine3;
+                AddressLine1 = Properties.Settings.Default.AddressLine1;
+                AddressLine2 = Properties.Settings.Default.AddressLine2;
+                AddressLine3 = Properties.Settings.Default.AddressLine3;
+                ImpProductName = Properties.Settings.Default.ProductName;
+                Brand = Properties.Settings.Default.Brand;
+                Model = Properties.Settings.Default.Model;
+                Series = Properties.Settings.Default.Series;
+                SerialNumberStart = Properties.Settings.Default.SerialNumberStart;
+                SerialNumberEnd = Properties.Settings.Default.SerialNumberEnd;
+                Specs = Properties.Settings.Default.Specs;
+
                 /* Update GUI */
-                TxtCompany.Text = $"{companyLine1}\r\n{companyLine2}";
-                TxtFiscalAddress.Text = $"{fiscalAddressLine1}\r\n{fiscalAddressLine2}\r\n{fiscalAddressLine3}";
-                TxtAddress.Text = $"{addressLine1}\r\n{addressLine2}\r\n{addressLine3}";
-                CboProduct.Text = productName;
-                CboBrand.Text = brand;
-                TxtModel.Text = model;
-                TxtSeries.Text = series;
-                NumSerialNumberStart.Text = serialNumberStart.ToString();
-                NumSerialNumberEnd.Text = serialNumberEnd.ToString();
-                TxtSpecs.Text = specs;
-                edited = true;
+                TxtCompany.Text = $"{CompanyLine1}\r\n{CompanyLine2}";
+                TxtFiscalAddress.Text = $"{FiscalAddressLine1}\r\n{FiscalAddressLine2}\r\n{FiscalAddressLine3}";
+                TxtAddress.Text = $"{AddressLine1}\r\n{AddressLine2}\r\n{AddressLine3}";
+                CboProduct.Text = ImpProductName;
+                CboBrand.Text = Brand;
+                TxtModel.Text = Model;
+                TxtSeries.Text = Series;
+                NumSerialNumberStart.Text = SerialNumberStart.ToString();
+                NumSerialNumberEnd.Text = SerialNumberEnd.ToString();
+                TxtSpecs.Text = Specs;
+                Edited = true;
             }
         }
 
         private void BtnCreateDocument_Click(object sender, EventArgs e)
         {
-            companyLine1 = TxtCompany.Lines.Length >= 1 ? TxtCompany.Lines[0] : "";
-            companyLine2 = TxtCompany.Lines.Length >= 2 ? TxtCompany.Lines[1] : "";
-            fiscalAddressLine1 = TxtFiscalAddress.Lines.Length >= 1 ? TxtFiscalAddress.Lines[0] : "";
-            fiscalAddressLine2 = TxtFiscalAddress.Lines.Length >= 2 ? TxtFiscalAddress.Lines[1] : "";
-            fiscalAddressLine3 = TxtFiscalAddress.Lines.Length == 3 ? TxtFiscalAddress.Lines[2] : "";
-            addressLine1 = TxtAddress.Lines.Length >= 1 ? TxtAddress.Lines[0] : "";
-            addressLine2 = TxtAddress.Lines.Length >= 2 ? TxtAddress.Lines[1] : "";
-            addressLine3 = TxtAddress.Lines.Length == 3 ? TxtAddress.Lines[2] : "";
-            productName = CboProduct.Text;
-            brand = CboBrand.Text;
-            model = TxtModel.Text;
-            series = TxtSeries.Text;
-            serialNumberStart = NumSerialNumberStart.Text == "" ? 0U : uint.Parse(NumSerialNumberStart.Text);
-            serialNumberEnd = NumSerialNumberEnd.Text == "" ? 0U : uint.Parse(NumSerialNumberEnd.Text);
-            specs = TxtSpecs.Text;
+            CompanyLine1 = TxtCompany.Lines.Length >= 1 ? TxtCompany.Lines[0] : string.Empty;
+            CompanyLine2 = TxtCompany.Lines.Length >= 2 ? TxtCompany.Lines[1] : string.Empty;
+            FiscalAddressLine1 = TxtFiscalAddress.Lines.Length >= 1 ? TxtFiscalAddress.Lines[0] : string.Empty;
+            FiscalAddressLine2 = TxtFiscalAddress.Lines.Length >= 2 ? TxtFiscalAddress.Lines[1] : string.Empty;
+            FiscalAddressLine3 = TxtFiscalAddress.Lines.Length == 3 ? TxtFiscalAddress.Lines[2] : string.Empty;
+            AddressLine1 = TxtAddress.Lines.Length >= 1 ? TxtAddress.Lines[0] : string.Empty;
+            AddressLine2 = TxtAddress.Lines.Length >= 2 ? TxtAddress.Lines[1] : string.Empty;
+            AddressLine3 = TxtAddress.Lines.Length == 3 ? TxtAddress.Lines[2] : string.Empty;
+            ImpProductName = CboProduct.Text;
+            Brand = CboBrand.Text;
+            Model = TxtModel.Text;
+            Series = TxtSeries.Text;
+            SerialNumberStart = string.IsNullOrWhiteSpace(NumSerialNumberStart.Text) ? 0U : uint.Parse(NumSerialNumberStart.Text);
+            SerialNumberEnd = string.IsNullOrWhiteSpace(NumSerialNumberEnd.Text) ? 0U : uint.Parse(NumSerialNumberEnd.Text);
+            Specs = TxtSpecs.Text;
 
             if (ValidateFields())
             {
@@ -183,7 +178,7 @@ namespace EtiquetasArca
                     string filePath = saveFileDialog.FileName;
                     GenerateDocument(filePath);
                     OpenPdf(filePath);
-                    edited = true;
+                    Edited = true;
                 }
             }
         }
@@ -192,14 +187,14 @@ namespace EtiquetasArca
         {
             if (ConfirmExit())
             {
-                closed = true;
+                ConfirmedClosed = true;
                 Application.Exit();
             }
         }
 
         private void FrmEtiquetas_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (!closed && !ConfirmExit())
+            if (!ConfirmedClosed && !ConfirmExit())
             {
                 e.Cancel = true;
             }
@@ -219,13 +214,11 @@ namespace EtiquetasArca
             string _brand = Properties.Settings.Default.Brand;
             string _model = Properties.Settings.Default.Model;
             string _series = Properties.Settings.Default.Series;
-            uint _serialNumberStart = Properties.Settings.Default.SerialNumberStart;
-            uint _serialNumberEnd = Properties.Settings.Default.SerialNumberEnd;
             string _specs = Properties.Settings.Default.Specs;
 
             DialogResult result;
 
-            if (editing)
+            if (Editing)
             {
                 result = MessageBox.Show(
                     "Hay cambios sin guardar. ¿Deseas salir de todos modos?",
@@ -243,23 +236,23 @@ namespace EtiquetasArca
                     MessageBoxIcon.Question
                     );
                 
-                if (edited && (result == DialogResult.Yes))
+                if (Edited && (result == DialogResult.Yes))
                 {
-                    Properties.Settings.Default.CompanyNameLine1 = companyLine1 ?? _companyLine1;
-                    Properties.Settings.Default.CompanyNameLine2 = companyLine2 ?? _companyLine2;
-                    Properties.Settings.Default.FiscalAddressLine1 = fiscalAddressLine1 ?? _fiscalAddressLine1;
-                    Properties.Settings.Default.FiscalAddressLine2 = fiscalAddressLine2 ?? _fiscalAddressLine2;
-                    Properties.Settings.Default.FiscalAddressLine3 = fiscalAddressLine3 ?? _fiscalAddressLine3;
-                    Properties.Settings.Default.AddressLine1 = addressLine1 ?? _addressLine1;
-                    Properties.Settings.Default.AddressLine2 = addressLine2 ?? _addressLine2;
-                    Properties.Settings.Default.AddressLine3 = addressLine3 ?? _addressLine3;
-                    Properties.Settings.Default.ProductName = productName ?? _productName;
-                    Properties.Settings.Default.Brand = brand ?? _brand;
-                    Properties.Settings.Default.Model = model ?? _model;
-                    Properties.Settings.Default.Series = series ?? _series;
-                    Properties.Settings.Default.SerialNumberStart = serialNumberStart;
-                    Properties.Settings.Default.SerialNumberEnd = serialNumberEnd;
-                    Properties.Settings.Default.Specs = specs ?? _specs;
+                    Properties.Settings.Default.CompanyNameLine1 = CompanyLine1 ?? _companyLine1;
+                    Properties.Settings.Default.CompanyNameLine2 = CompanyLine2 ?? _companyLine2;
+                    Properties.Settings.Default.FiscalAddressLine1 = FiscalAddressLine1 ?? _fiscalAddressLine1;
+                    Properties.Settings.Default.FiscalAddressLine2 = FiscalAddressLine2 ?? _fiscalAddressLine2;
+                    Properties.Settings.Default.FiscalAddressLine3 = FiscalAddressLine3 ?? _fiscalAddressLine3;
+                    Properties.Settings.Default.AddressLine1 = AddressLine1 ?? _addressLine1;
+                    Properties.Settings.Default.AddressLine2 = AddressLine2 ?? _addressLine2;
+                    Properties.Settings.Default.AddressLine3 = AddressLine3 ?? _addressLine3;
+                    Properties.Settings.Default.ProductName = ImpProductName ?? _productName;
+                    Properties.Settings.Default.Brand = Brand ?? _brand;
+                    Properties.Settings.Default.Model = Model ?? _model;
+                    Properties.Settings.Default.Series = Series ?? _series;
+                    Properties.Settings.Default.SerialNumberStart = SerialNumberStart;
+                    Properties.Settings.Default.SerialNumberEnd = SerialNumberEnd;
+                    Properties.Settings.Default.Specs = Specs ?? _specs;
                     Properties.Settings.Default.WindowLocation = this.Location;
                     Properties.Settings.Default.Save();
                 }
@@ -272,22 +265,22 @@ namespace EtiquetasArca
         {
             bool result = false;
 
-            if (string.IsNullOrWhiteSpace(companyLine1) ||
-                string.IsNullOrWhiteSpace(companyLine2) ||
-                string.IsNullOrWhiteSpace(fiscalAddressLine1) ||
-                string.IsNullOrWhiteSpace(fiscalAddressLine2) ||
-                string.IsNullOrWhiteSpace(fiscalAddressLine3) ||
-                string.IsNullOrWhiteSpace(addressLine1) ||
-                string.IsNullOrWhiteSpace(addressLine2) ||
-                string.IsNullOrWhiteSpace(addressLine3) ||
-                string.IsNullOrWhiteSpace(productName) ||
-                string.IsNullOrWhiteSpace(brand) ||
-                string.IsNullOrWhiteSpace(model) ||
-                string.IsNullOrWhiteSpace(series) ||
-                (serialNumberStart == 0) ||
-                (serialNumberEnd == 0) ||
-                (serialNumberEnd < serialNumberStart) ||
-                string.IsNullOrWhiteSpace(specs))
+            if (string.IsNullOrWhiteSpace(CompanyLine1) ||
+                string.IsNullOrWhiteSpace(CompanyLine2) ||
+                string.IsNullOrWhiteSpace(FiscalAddressLine1) ||
+                string.IsNullOrWhiteSpace(FiscalAddressLine2) ||
+                string.IsNullOrWhiteSpace(FiscalAddressLine3) ||
+                string.IsNullOrWhiteSpace(AddressLine1) ||
+                string.IsNullOrWhiteSpace(AddressLine2) ||
+                string.IsNullOrWhiteSpace(AddressLine3) ||
+                string.IsNullOrWhiteSpace(ImpProductName) ||
+                string.IsNullOrWhiteSpace(Brand) ||
+                string.IsNullOrWhiteSpace(Model) ||
+                string.IsNullOrWhiteSpace(Series) ||
+                (SerialNumberStart == 0) ||
+                (SerialNumberEnd == 0) ||
+                (SerialNumberEnd < SerialNumberStart) ||
+                string.IsNullOrWhiteSpace(Specs))
             {
                 MessageBox.Show(
                     "Por favor, completa todos los campos correctamente.",
@@ -296,90 +289,90 @@ namespace EtiquetasArca
                     MessageBoxIcon.Warning
                     );
 
-                if (string.IsNullOrWhiteSpace(companyLine1))
+                if (string.IsNullOrWhiteSpace(CompanyLine1))
                 {
                     EnableEditing(true);
-                    companyLine1 = Properties.Settings.Default.CompanyNameLine1;
+                    CompanyLine1 = Properties.Settings.Default.CompanyNameLine1;
                     TxtCompany.Focus();
                 }
-                else if (string.IsNullOrWhiteSpace(companyLine2))
+                else if (string.IsNullOrWhiteSpace(CompanyLine2))
                 {
                     EnableEditing(true);
-                    companyLine2 = Properties.Settings.Default.CompanyNameLine2;
+                    CompanyLine2 = Properties.Settings.Default.CompanyNameLine2;
                     TxtCompany.Focus();
                 }
-                else if (string.IsNullOrWhiteSpace(fiscalAddressLine1))
+                else if (string.IsNullOrWhiteSpace(FiscalAddressLine1))
                 {
                     EnableEditing(true);
-                    fiscalAddressLine1 = Properties.Settings.Default.FiscalAddressLine1;
+                    FiscalAddressLine1 = Properties.Settings.Default.FiscalAddressLine1;
                     TxtFiscalAddress.Focus();
                 }
-                else if (string.IsNullOrWhiteSpace(fiscalAddressLine2))
+                else if (string.IsNullOrWhiteSpace(FiscalAddressLine2))
                 {
                     EnableEditing(true);
-                    fiscalAddressLine2 = Properties.Settings.Default.FiscalAddressLine2;
+                    FiscalAddressLine2 = Properties.Settings.Default.FiscalAddressLine2;
                     TxtFiscalAddress.Focus();
                 }
-                else if (string.IsNullOrWhiteSpace(fiscalAddressLine3))
+                else if (string.IsNullOrWhiteSpace(FiscalAddressLine3))
                 {
                     EnableEditing(true);
-                    fiscalAddressLine3 = Properties.Settings.Default.FiscalAddressLine3;
+                    FiscalAddressLine3 = Properties.Settings.Default.FiscalAddressLine3;
                     TxtFiscalAddress.Focus();
                 }
-                else if (string.IsNullOrWhiteSpace(addressLine1))
+                else if (string.IsNullOrWhiteSpace(AddressLine1))
                 {
                     EnableEditing(true);
-                    addressLine1 = Properties.Settings.Default.AddressLine1;
+                    AddressLine1 = Properties.Settings.Default.AddressLine1;
                     TxtAddress.Focus();
                 }
-                else if (string.IsNullOrWhiteSpace(addressLine2))
+                else if (string.IsNullOrWhiteSpace(AddressLine2))
                 {
                     EnableEditing(true);
-                    addressLine2 = Properties.Settings.Default.AddressLine2;
+                    AddressLine2 = Properties.Settings.Default.AddressLine2;
                     TxtAddress.Focus();
                 }
-                else if (string.IsNullOrWhiteSpace(addressLine3))
+                else if (string.IsNullOrWhiteSpace(AddressLine3))
                 {
                     EnableEditing(true);
-                    addressLine3 = Properties.Settings.Default.AddressLine3;
+                    AddressLine3 = Properties.Settings.Default.AddressLine3;
                     TxtAddress.Focus();
                 }
-                else if (string.IsNullOrWhiteSpace(productName))
+                else if (string.IsNullOrWhiteSpace(ImpProductName))
                 {
-                    productName = Properties.Settings.Default.ProductName;
+                    ImpProductName = Properties.Settings.Default.ProductName;
                     CboProduct.Focus();
                 }
-                else if (string.IsNullOrWhiteSpace(brand))
+                else if (string.IsNullOrWhiteSpace(Brand))
                 {
-                    brand = Properties.Settings.Default.Brand;
+                    Brand = Properties.Settings.Default.Brand;
                     CboBrand.Focus();
                 }
-                else if (string.IsNullOrWhiteSpace(model))
+                else if (string.IsNullOrWhiteSpace(Model))
                 {
-                    model = Properties.Settings.Default.Model;
+                    Model = Properties.Settings.Default.Model;
                     TxtModel.Focus();
                 }
-                else if (string.IsNullOrWhiteSpace(series))
+                else if (string.IsNullOrWhiteSpace(Series))
                 {
-                    series = Properties.Settings.Default.Series;
+                    Series = Properties.Settings.Default.Series;
                     TxtSeries.Focus();
                 }
-                else if (serialNumberEnd == 0)
+                else if (SerialNumberEnd == 0)
                 {
-                    serialNumberStart = Properties.Settings.Default.SerialNumberStart;
-                    serialNumberEnd = Properties.Settings.Default.SerialNumberEnd;
+                    SerialNumberStart = Properties.Settings.Default.SerialNumberStart;
+                    SerialNumberEnd = Properties.Settings.Default.SerialNumberEnd;
                     NumSerialNumberEnd.Focus();
                 }
-                else if ((serialNumberStart == 0) || (serialNumberEnd < serialNumberStart))
+                else if ((SerialNumberStart == 0) || (SerialNumberEnd < SerialNumberStart))
                 {
-                    serialNumberStart = Properties.Settings.Default.SerialNumberStart;
-                    serialNumberEnd = Properties.Settings.Default.SerialNumberEnd;
+                    SerialNumberStart = Properties.Settings.Default.SerialNumberStart;
+                    SerialNumberEnd = Properties.Settings.Default.SerialNumberEnd;
                     NumSerialNumberStart.Focus();
                 }
-                else if (string.IsNullOrWhiteSpace(specs))
+                else if (string.IsNullOrWhiteSpace(Specs))
                 {
                     EnableEditing(true);
-                    specs = Properties.Settings.Default.Specs;
+                    Specs = Properties.Settings.Default.Specs;
                     TxtSpecs.Focus();
                 }
             }
@@ -404,13 +397,12 @@ namespace EtiquetasArca
             TxtSpecs.Enabled = enable;
             TxtSpecs.BorderStyle = enable ? BorderStyle.Fixed3D : BorderStyle.FixedSingle;
             BtnCreateDocument.Enabled = !enable;
-            editing = enable;
+            Editing = enable;
         }
 
-        private static void GenerateDocument(string filePath)
+        private void GenerateDocument(string filePath)
         {
-            //uint _totalLabels = serialNumberEnd - serialNumberStart + 1;
-            uint _totalLabels = serialNumberStart + 5;
+            uint _totalLabels = SerialNumberEnd - SerialNumberStart + 1;
 
             if ((_totalLabels % 6) != 0)
             {
@@ -418,68 +410,75 @@ namespace EtiquetasArca
             }
 
             var serialNumbers = Enumerable
-                .Range((int)serialNumberStart, (int)_totalLabels)
+                .Range((int)SerialNumberStart, (int)_totalLabels)
                 .ToList();
 
-            Document.Create(container =>
+            try
             {
-                container.Page(page =>
+                Document.Create(container =>
                 {
-                    page.Size(PageSizes.Letter);
-                    page.Margin(0.5F, Unit.Inch);
-                    page.DefaultTextStyle(x => x
-                        .FontFamily("Times New Roman")
-                        .FontSize(8));
-
-                    page.Content().Element(content =>
+                    container.Page(page =>
                     {
-                        int totalLabels = serialNumbers.Count;
-                        int currentIndex = 0;
+                        page.Size(PageSizes.Letter);
+                        page.Margin(0.5F, Unit.Inch);
+                        page.DefaultTextStyle(x => x
+                            .FontFamily("Times New Roman")
+                            .FontSize(8));
 
-                        while (currentIndex < totalLabels)
+                        page.Content().Element(content =>
                         {
-                            content.Column(column =>
-                            {
-                                column.Spacing(10);
+                            int totalLabels = serialNumbers.Count;
+                            int currentIndex = 0;
 
-                                for (int row = 0; row < 3; row++)
+                            while (currentIndex < totalLabels)
+                            {
+                                content.Column(column =>
                                 {
-                                    column.Item().Row(rowContainer =>
+                                    column.Spacing(10);
+
+                                    for (int row = 0; row < 3; row++)
                                     {
-                                        rowContainer.Spacing(10);
-
-                                        for (int col = 0; col < 2; col++)
+                                        column.Item().Row(rowContainer =>
                                         {
-                                            if (currentIndex < totalLabels)
-                                            {
-                                                int serial = serialNumbers[currentIndex++];
+                                            rowContainer.Spacing(10);
 
-                                                rowContainer.RelativeItem().Border(1).Height(233).Padding(3).Element(label =>
+                                            for (int col = 0; col < 2; col++)
+                                            {
+                                                if (currentIndex < totalLabels)
                                                 {
-                                                    ComposeLabel(label, serial);
-                                                });
-                                            }
-                                            else
-                                            {
-                                                rowContainer.RelativeItem();
-                                            }
-                                        }
-                                    });
-                                }
-                            });
+                                                    int serial = serialNumbers[currentIndex++];
 
-                            if (currentIndex < totalLabels)
-                            {
-                                content.PageBreak();
+                                                    rowContainer.RelativeItem().Border(1).Height(233).Padding(3).Element(label =>
+                                                    {
+                                                        ComposeLabel(label, serial);
+                                                    });
+                                                }
+                                                else
+                                                {
+                                                    rowContainer.RelativeItem();
+                                                }
+                                            }
+                                        });
+                                    }
+                                });
+
+                                if (currentIndex < totalLabels)
+                                {
+                                    content.PageBreak();
+                                }
                             }
-                        }
+                        });
                     });
-                });
-            })
-            .GeneratePdf(filePath);
+                })
+                .GeneratePdf(filePath);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al generar el documento PDF: {ex.Message}", "Error al generar PDF", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
-        private static void ComposeLabel(IContainer container, int serial)
+        private void ComposeLabel(IContainer container, int serial)
         {
             float _padding1 = 73;
             float _padding2 = 105.2F;
@@ -503,8 +502,8 @@ namespace EtiquetasArca
                     col.Item().Text("Importador y Reconstructor:");
                     col.Item().PaddingLeft(_padding1).Column(importer =>
                     {
-                        importer.Item().Text(companyLine1).Bold();
-                        importer.Item().Text(companyLine2).Bold();
+                        importer.Item().Text(CompanyLine1).Bold();
+                        importer.Item().Text(CompanyLine2).Bold();
                     });
 
                     col.Item().Text("");
@@ -513,9 +512,9 @@ namespace EtiquetasArca
                         r.RelativeItem(_row1Length).Text("Domicilio Fiscal:");
                         r.RelativeItem(_row2Length).Column(addr =>
                         {
-                            addr.Item().Text(fiscalAddressLine1);
-                            addr.Item().Text(fiscalAddressLine2);
-                            addr.Item().Text(fiscalAddressLine3);
+                            addr.Item().Text(FiscalAddressLine1);
+                            addr.Item().Text(FiscalAddressLine2);
+                            addr.Item().Text(FiscalAddressLine3);
                         });
                     });
 
@@ -523,39 +522,39 @@ namespace EtiquetasArca
 
                     col.Item().PaddingLeft(_padding2).Column(addr =>
                     {
-                        addr.Item().Text(addressLine1);
-                        addr.Item().Text(addressLine2);
-                        addr.Item().Text(addressLine3);
+                        addr.Item().Text(AddressLine1);
+                        addr.Item().Text(AddressLine2);
+                        addr.Item().Text(AddressLine3);
                     });
 
                     col.Item().Row(r =>
                     {
                         r.RelativeItem(_row1Length).Text("Nombre del producto:").Bold();
-                        r.RelativeItem(_row2Length).Text(productName).Bold();
+                        r.RelativeItem(_row2Length).Text(ImpProductName).Bold();
                     });
 
                     col.Item().Row(r =>
                     {
                         r.RelativeItem(_row1Length).Text("Marca:").Bold();
-                        r.RelativeItem(_row2Length).Text(brand).Bold();
+                        r.RelativeItem(_row2Length).Text(Brand).Bold();
                     });
 
                     col.Item().Row(r =>
                     {
                         r.RelativeItem(_row1Length).Text("Modelo:").Bold();
-                        r.RelativeItem(_row2Length).Text(model).Bold();
+                        r.RelativeItem(_row2Length).Text(Model).Bold();
                     });
 
                     col.Item().Row(r =>
                     {
                         r.RelativeItem(_row1Length).Text("Serie:").Bold();
-                        r.RelativeItem(_row2Length).Text(series).Bold();
+                        r.RelativeItem(_row2Length).Text(Series).Bold();
                     });
 
                     col.Item().Row(r =>
                     {
                         r.RelativeItem(_row1Length).Text("Especificaciones:");
-                        r.RelativeItem(_row2Length).Text(specs);
+                        r.RelativeItem(_row2Length).Text(Specs);
                     });
 
                     col.Item().Row(r =>
