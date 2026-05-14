@@ -668,6 +668,7 @@ namespace EtiquetasArca
                     };
 
                     System.Diagnostics.Process.Start(processInfo);
+                    ConfirmedClosed = true;
                     Application.Exit(); /* Ensure the current instance exits after launching the new one with elevated privileges. */
                 }
             }
