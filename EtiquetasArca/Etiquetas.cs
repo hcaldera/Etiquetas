@@ -25,7 +25,7 @@ namespace EtiquetasArca
 
         private bool Editing = false;
         private bool Edited = false;
-        private bool ConfirmedClosed = false;
+        private static bool ConfirmedClosed = false;
 
         private readonly LicenseManager licenseManager;
 
