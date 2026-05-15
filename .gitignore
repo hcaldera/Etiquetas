@@ -5,3 +5,5 @@ LicenseGenerator/bin/
 LicenseGenerator/obj/
 EtiquetasSetup/Debug/
 EtiquetasSetup/Release/
+#Visual Studio files
+*.user
