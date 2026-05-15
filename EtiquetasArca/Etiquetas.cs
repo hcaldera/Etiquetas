@@ -35,7 +35,6 @@ namespace EtiquetasArca
 
             licenseManager = new LicenseManager();
 
-
             if (licenseManager.LicenseOK && licenseManager.InstallationOK)
             {
                 CompanyLine1 = Properties.Settings.Default.CompanyNameLine1;
@@ -471,46 +470,41 @@ namespace EtiquetasArca
                             .FontFamily("Times New Roman")
                             .FontSize(8));
 
-                        page.Content().Element(content =>
-                        {
+                        page.Content().Column(mainColumn =>
+                        { 
                             int totalLabels = serialNumbers.Count;
                             int currentIndex = 0;
+                            bool isFirstPage = true;
+
+                            mainColumn.Spacing(5);
 
                             while (currentIndex < totalLabels)
                             {
-                                content.Column(column =>
+                                /* Add a page break before every page except the first one */
+                                if (!isFirstPage)
                                 {
-                                    column.Spacing(10);
+                                    mainColumn.Item().PageBreak();
+                                }
 
-                                    for (int row = 0; row < 3; row++)
+                                isFirstPage = false;
+
+                                /* Each page: 3 rows x 2 cols = 6 labels */
+                                for (int row = 0; row < 3; row++)
+                                {
+                                    mainColumn.Item().Row(rowContainter =>
                                     {
-                                        column.Item().Row(rowContainer =>
+                                        rowContainter.Spacing(10);
+
+                                        for (int col = 0; col < 2; col++)
                                         {
-                                            rowContainer.Spacing(10);
-
-                                            for (int col = 0; col < 2; col++)
+                                            if (currentIndex < totalLabels)
                                             {
-                                                if (currentIndex < totalLabels)
-                                                {
-                                                    int serial = serialNumbers[currentIndex++];
+                                                int serial = serialNumbers[currentIndex++];
 
-                                                    rowContainer.RelativeItem().Border(1).Height(233).Padding(3).Element(label =>
-                                                    {
-                                                        ComposeLabel(label, serial);
-                                                    });
-                                                }
-                                                else
-                                                {
-                                                    rowContainer.RelativeItem();
-                                                }
+                                                rowContainter.RelativeItem().Border(0.5F).Height(233).Padding(3).Element(label => ComposeLabel(label, serial));
                                             }
-                                        });
-                                    }
-                                });
-
-                                if (currentIndex < totalLabels)
-                                {
-                                    content.PageBreak();
+                                        }
+                                    });
                                 }
                             }
                         });
@@ -659,7 +653,6 @@ namespace EtiquetasArca
 
                 if (result == DialogResult.Yes)
                 {
-
                     var processInfo = new System.Diagnostics.ProcessStartInfo
                     {
                         UseShellExecute = true,

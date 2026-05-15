@@ -323,6 +323,7 @@
             // NumSerialNumberStart
             // 
             NumSerialNumberStart.Location = new Point(148, 338);
+            NumSerialNumberStart.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
             NumSerialNumberStart.Name = "NumSerialNumberStart";
             NumSerialNumberStart.Size = new Size(129, 23);
             NumSerialNumberStart.TabIndex = 10;
@@ -330,6 +331,7 @@
             // NumSerialNumberEnd
             // 
             NumSerialNumberEnd.Location = new Point(283, 338);
+            NumSerialNumberEnd.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
             NumSerialNumberEnd.Name = "NumSerialNumberEnd";
             NumSerialNumberEnd.Size = new Size(129, 23);
             NumSerialNumberEnd.TabIndex = 11;
