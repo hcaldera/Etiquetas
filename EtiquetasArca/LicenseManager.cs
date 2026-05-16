@@ -260,7 +260,7 @@ namespace EtiquetasArca
                 {
                     try
                     {
-                        if (GetLicenseFromFile(dlg.FileName, out License license))
+                        if (GetLicenseFromFile(dlg.FileName, out License license, true))
                         {
                             var redundantKey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(RedundantRegisterPath, true) ??
                                                Microsoft.Win32.Registry.LocalMachine.CreateSubKey(RedundantRegisterPath, true);
