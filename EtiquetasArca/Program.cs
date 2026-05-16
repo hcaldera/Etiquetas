@@ -8,12 +8,32 @@ namespace EtiquetasArca
         [STAThread]
         static void Main()
         {
-            QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
+            using Mutex singleInstanceMutex = new(true, @"Local\EtiquetasArca.SingleInstance", out bool createdNew);
 
-            // To customize application configuration such as set high DPI settings or default font,
-            // see https://aka.ms/applicationconfiguration.
-            ApplicationConfiguration.Initialize();
-            Application.Run(new Etiquetas());
+            if (!createdNew)
+            {
+                MessageBox.Show(
+                    "La aplicacion ya se esta ejecutando.",
+                    "Arca de la Frontera - Etiquetas",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+
+                return;
+            }
+
+            try
+            {
+                QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
+
+                // To customize application configuration such as set high DPI settings or default font,
+                // see https://aka.ms/applicationconfiguration.
+                ApplicationConfiguration.Initialize();
+                Application.Run(new Etiquetas());
+            }
+            finally
+            {
+                singleInstanceMutex.ReleaseMutex();
+            }
         }
     }
 }
