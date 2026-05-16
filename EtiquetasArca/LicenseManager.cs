@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Runtime.Versioning;
 using System.Text;
 
@@ -274,7 +274,7 @@ namespace EtiquetasArca
                                 object? protectedIDReg = redundantIDsKey?.GetValue(regName);
                                 string protectedIDStr = protectedIDReg?.ToString() ?? string.Empty;
 
-                                if (Encoding.UTF8.GetString(Unprotect(protectedIDStr)).Equals(License.Payload.LicenseId))
+                                if (Encoding.UTF8.GetString(Unprotect(protectedIDStr)).Equals(license.Payload.LicenseId))
                                 {
                                     idProtected = true;
                                     break;
