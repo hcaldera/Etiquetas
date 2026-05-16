@@ -218,7 +218,6 @@ namespace EtiquetasArca
                 {
                     string filePath = saveFileDialog.FileName;
                     GenerateDocument(filePath);
-                    OpenPdf(filePath);
                     Edited = true;
                 }
             }
@@ -511,6 +510,8 @@ namespace EtiquetasArca
                     });
                 })
                 .GeneratePdf(filePath);
+
+                OpenPdf(filePath);
             }
             catch (Exception ex)
             {
