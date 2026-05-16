@@ -58,9 +58,13 @@
             BtnLicenseManager = new ToolStripButton();
             NumSerialNumberStart = new NumericUpDown();
             NumSerialNumberEnd = new NumericUpDown();
+            StatusStripMain = new StatusStrip();
+            LblProgressStatus = new ToolStripStatusLabel();
+            ProgressDocument = new ToolStripProgressBar();
             ToolStripMainMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)NumSerialNumberStart).BeginInit();
             ((System.ComponentModel.ISupportInitialize)NumSerialNumberEnd).BeginInit();
+            StatusStripMain.SuspendLayout();
             SuspendLayout();
             // 
             // BtnCreateDocument
@@ -336,13 +340,38 @@
             NumSerialNumberEnd.Size = new Size(129, 23);
             NumSerialNumberEnd.TabIndex = 11;
             // 
+            // StatusStripMain
+            // 
+            StatusStripMain.Items.AddRange(new ToolStripItem[] { LblProgressStatus, ProgressDocument });
+            StatusStripMain.Location = new Point(0, 436);
+            StatusStripMain.Name = "StatusStripMain";
+            StatusStripMain.Size = new Size(424, 22);
+            StatusStripMain.TabIndex = 14;
+            StatusStripMain.Text = "statusStrip1";
+            StatusStripMain.Visible = false;
+            // 
+            // LblProgressStatus
+            // 
+            LblProgressStatus.Name = "LblProgressStatus";
+            LblProgressStatus.Size = new Size(54, 17);
+            LblProgressStatus.Text = "Progreso";
+            LblProgressStatus.Visible = false;
+            // 
+            // ProgressDocument
+            // 
+            ProgressDocument.Alignment = ToolStripItemAlignment.Right;
+            ProgressDocument.Name = "ProgressDocument";
+            ProgressDocument.Size = new Size(100, 16);
+            ProgressDocument.Visible = false;
+            // 
             // Etiquetas
             // 
             AcceptButton = BtnCreateDocument;
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = BtnExit;
-            ClientSize = new Size(424, 436);
+            ClientSize = new Size(424, 458);
+            Controls.Add(StatusStripMain);
             Controls.Add(NumSerialNumberEnd);
             Controls.Add(NumSerialNumberStart);
             Controls.Add(ToolStripMainMenu);
@@ -369,8 +398,8 @@
             Controls.Add(BtnCreateDocument);
             Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
-            MaximumSize = new Size(440, 475);
-            MinimumSize = new Size(440, 475);
+            MaximumSize = new Size(440, 497);
+            MinimumSize = new Size(440, 497);
             Name = "Etiquetas";
             StartPosition = FormStartPosition.Manual;
             Text = "Arca de la Frontera - Etiquetas";
@@ -379,6 +408,8 @@
             ToolStripMainMenu.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)NumSerialNumberStart).EndInit();
             ((System.ComponentModel.ISupportInitialize)NumSerialNumberEnd).EndInit();
+            StatusStripMain.ResumeLayout(false);
+            StatusStripMain.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -414,5 +445,8 @@
         private ToolStripButton BtnReset;
         private ToolStripButton BtnClear;
         private ToolStripButton BtnLicenseManager;
+        private StatusStrip StatusStripMain;
+        private ToolStripStatusLabel LblProgressStatus;
+        private ToolStripProgressBar ProgressDocument;
     }
 }

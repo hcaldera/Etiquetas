@@ -7,6 +7,23 @@ namespace EtiquetasArca
 {
     public partial class Etiquetas : Form
     {
+        private sealed record LabelDocumentData(
+            string CompanyLine1,
+            string CompanyLine2,
+            string FiscalAddressLine1,
+            string FiscalAddressLine2,
+            string FiscalAddressLine3,
+            string AddressLine1,
+            string AddressLine2,
+            string AddressLine3,
+            string ImpProductName,
+            string Brand,
+            string Model,
+            string Series,
+            uint SerialNumberStart,
+            uint SerialNumberEnd,
+            string Specs);
+
         private string CompanyLine1 = string.Empty;
         private string CompanyLine2 = string.Empty;
         private string FiscalAddressLine1 = string.Empty;
@@ -25,6 +42,7 @@ namespace EtiquetasArca
 
         private bool Editing = false;
         private bool Edited = false;
+        private static bool Generating = false;
         private static bool ConfirmedClosed = false;
 
         private readonly LicenseManager licenseManager;
@@ -233,7 +251,7 @@ namespace EtiquetasArca
 
         private void FrmEtiquetas_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (!ConfirmedClosed && !ConfirmExit())
+            if (Generating || (!ConfirmedClosed && !ConfirmExit()))
             {
                 e.Cancel = true;
             }
@@ -463,16 +481,28 @@ namespace EtiquetasArca
                 Specs);
 
             BtnCreateDocument.Enabled = false;
+            BtnExit.Enabled = false;
+            BtnEdit.Enabled = false;
+            BtnLicenseManager.Enabled = false;
+            BtnClear.Enabled = false;
+            BtnReset.Enabled = false;
             UseWaitCursor = true;
+            Generating = true;
+            PrepareDocumentProgress(GetPaddedTotalLabels(documentData));
+            /* Ensure the numeric up-down control reflects the current end serial number during generation */
+            SerialNumberEnd = documentData.SerialNumberStart + (uint)GetPaddedTotalLabels(documentData) - 1U;
+            NumSerialNumberEnd.Value = SerialNumberEnd;
 
             Thread documentThread = new(() =>
             {
                 try
                 {
-                    GenerateDocument(filePath, documentData);
+                    GenerateDocument(filePath, documentData, ReportDocumentProgress);
 
                     RunOnUiThread(() =>
                     {
+                        LblProgressStatus.Text = "Documento generado.";
+                        ProgressDocument.Value = ProgressDocument.Maximum;
                         Edited = true;
                         OpenPdf(filePath);
                     });
@@ -488,14 +518,54 @@ namespace EtiquetasArca
                 {
                     RunOnUiThread(() =>
                     {
-                        BtnCreateDocument.Enabled = !Editing;
+                        BtnCreateDocument.Enabled = true;
+                        BtnExit.Enabled = true;
+                        BtnEdit.Enabled = true;
+                        BtnLicenseManager.Enabled = true;
+                        BtnClear.Enabled = true;
+                        BtnReset.Enabled = true;
+                        StatusStripMain.Visible = false;
+                        LblProgressStatus.Text = string.Empty;
+                        LblProgressStatus.Visible = false;
+                        ProgressDocument.Visible = false;
+                        ProgressDocument.Value = 0;
                         UseWaitCursor = false;
+                        Generating = false;
                     });
                 }
-            });
-
-            documentThread.IsBackground = true;
+            })
+            {
+                IsBackground = true
+            };
             documentThread.Start();
+        }
+
+        private void PrepareDocumentProgress(int totalLabels)
+        {
+            StatusStripMain.Visible = true;
+            LblProgressStatus.Text = $"Generando etiquetas: 0/{totalLabels}";
+            LblProgressStatus.Visible = true;
+            ProgressDocument.Minimum = 0;
+            ProgressDocument.Maximum = Math.Max(totalLabels, 1);
+            ProgressDocument.Value = 0;
+            ProgressDocument.Visible = true;
+        }
+
+        private void ReportDocumentProgress(int labelsGenerated)
+        {
+            RunOnUiThread(() =>
+            {
+                if (labelsGenerated >= ProgressDocument.Maximum)
+                {
+                    LblProgressStatus.Text = "Finalizando documento...";
+                }
+                else
+                {
+                    LblProgressStatus.Text = $"Generando etiquetas: {labelsGenerated}/{ProgressDocument.Maximum}";
+                }
+                
+                ProgressDocument.Value = Math.Min(labelsGenerated, ProgressDocument.Maximum);
+            });
         }
 
         private void RunOnUiThread(Action action)
@@ -514,17 +584,12 @@ namespace EtiquetasArca
             }
         }
 
-        private void GenerateDocument(string filePath, LabelDocumentData documentData)
+        private static void GenerateDocument(string filePath, LabelDocumentData documentData, Action<int> reportProgress)
         {
-            uint _totalLabels = documentData.SerialNumberEnd - documentData.SerialNumberStart + 1;
-
-            if ((_totalLabels % 6) != 0)
-            {
-                _totalLabels += (6 - (_totalLabels % 6));
-            }
+            int totalLabelsToGenerate = GetPaddedTotalLabels(documentData);
 
             var serialNumbers = Enumerable
-                .Range((int)documentData.SerialNumberStart, (int)_totalLabels)
+                .Range((int)documentData.SerialNumberStart, totalLabelsToGenerate)
                 .ToList();
 
             Document.Create(container =>
@@ -569,6 +634,7 @@ namespace EtiquetasArca
                                             int serial = serialNumbers[currentIndex++];
 
                                             rowContainter.RelativeItem().Border(0.5F).Height(233).Padding(3).Element(label => ComposeLabel(label, serial, documentData));
+                                            reportProgress(currentIndex);
                                         }
                                     }
                                 });
@@ -580,7 +646,19 @@ namespace EtiquetasArca
             .GeneratePdf(filePath);
         }
 
-        private void ComposeLabel(IContainer container, int serial, LabelDocumentData documentData)
+        private static int GetPaddedTotalLabels(LabelDocumentData documentData)
+        {
+            uint totalLabels = documentData.SerialNumberEnd - documentData.SerialNumberStart + 1;
+
+            if ((totalLabels % 6) != 0)
+            {
+                totalLabels += (6 - (totalLabels % 6));
+            }
+
+            return (int)totalLabels;
+        }
+
+        private static void ComposeLabel(IContainer container, int serial, LabelDocumentData documentData)
         {
             float _padding1 = 73;
             float _padding2 = 105.2F;
@@ -667,23 +745,6 @@ namespace EtiquetasArca
                 });
             });
         }
-
-        private sealed record LabelDocumentData(
-            string CompanyLine1,
-            string CompanyLine2,
-            string FiscalAddressLine1,
-            string FiscalAddressLine2,
-            string FiscalAddressLine3,
-            string AddressLine1,
-            string AddressLine2,
-            string AddressLine3,
-            string ImpProductName,
-            string Brand,
-            string Model,
-            string Series,
-            uint SerialNumberStart,
-            uint SerialNumberEnd,
-            string Specs);
 
         private static void OpenPdf(string path)
         {
