@@ -217,8 +217,7 @@ namespace EtiquetasArca
                 if (saveFileDialog.ShowDialog() == DialogResult.OK)
                 {
                     string filePath = saveFileDialog.FileName;
-                    GenerateDocument(filePath);
-                    Edited = true;
+                    GenerateDocumentInBackground(filePath);
                 }
             }
         }
@@ -444,9 +443,80 @@ namespace EtiquetasArca
             Editing = enable;
         }
 
-        private void GenerateDocument(string filePath)
+        private void GenerateDocumentInBackground(string filePath)
         {
-            uint _totalLabels = SerialNumberEnd - SerialNumberStart + 1;
+            LabelDocumentData documentData = new(
+                CompanyLine1,
+                CompanyLine2,
+                FiscalAddressLine1,
+                FiscalAddressLine2,
+                FiscalAddressLine3,
+                AddressLine1,
+                AddressLine2,
+                AddressLine3,
+                ImpProductName,
+                Brand,
+                Model,
+                Series,
+                SerialNumberStart,
+                SerialNumberEnd,
+                Specs);
+
+            BtnCreateDocument.Enabled = false;
+            UseWaitCursor = true;
+
+            Thread documentThread = new(() =>
+            {
+                try
+                {
+                    GenerateDocument(filePath, documentData);
+
+                    RunOnUiThread(() =>
+                    {
+                        Edited = true;
+                        OpenPdf(filePath);
+                    });
+                }
+                catch (Exception ex)
+                {
+                    RunOnUiThread(() =>
+                    {
+                        MessageBox.Show($"Error al generar el documento PDF: {ex.Message}", "Error al generar PDF", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    });
+                }
+                finally
+                {
+                    RunOnUiThread(() =>
+                    {
+                        BtnCreateDocument.Enabled = !Editing;
+                        UseWaitCursor = false;
+                    });
+                }
+            });
+
+            documentThread.IsBackground = true;
+            documentThread.Start();
+        }
+
+        private void RunOnUiThread(Action action)
+        {
+            if (IsDisposed || !IsHandleCreated)
+            {
+                return;
+            }
+
+            try
+            {
+                BeginInvoke(action);
+            }
+            catch (InvalidOperationException)
+            {
+            }
+        }
+
+        private void GenerateDocument(string filePath, LabelDocumentData documentData)
+        {
+            uint _totalLabels = documentData.SerialNumberEnd - documentData.SerialNumberStart + 1;
 
             if ((_totalLabels % 6) != 0)
             {
@@ -454,72 +524,63 @@ namespace EtiquetasArca
             }
 
             var serialNumbers = Enumerable
-                .Range((int)SerialNumberStart, (int)_totalLabels)
+                .Range((int)documentData.SerialNumberStart, (int)_totalLabels)
                 .ToList();
 
-            try
+            Document.Create(container =>
             {
-                Document.Create(container =>
+                container.Page(page =>
                 {
-                    container.Page(page =>
+                    page.Size(PageSizes.Letter);
+                    page.Margin(0.5F, Unit.Inch);
+                    page.DefaultTextStyle(x => x
+                        .FontFamily("Times New Roman")
+                        .FontSize(8));
+
+                    page.Content().Column(mainColumn =>
                     {
-                        page.Size(PageSizes.Letter);
-                        page.Margin(0.5F, Unit.Inch);
-                        page.DefaultTextStyle(x => x
-                            .FontFamily("Times New Roman")
-                            .FontSize(8));
+                        int totalLabels = serialNumbers.Count;
+                        int currentIndex = 0;
+                        bool isFirstPage = true;
 
-                        page.Content().Column(mainColumn =>
-                        { 
-                            int totalLabels = serialNumbers.Count;
-                            int currentIndex = 0;
-                            bool isFirstPage = true;
+                        mainColumn.Spacing(5);
 
-                            mainColumn.Spacing(5);
-
-                            while (currentIndex < totalLabels)
+                        while (currentIndex < totalLabels)
+                        {
+                            /* Add a page break before every page except the first one */
+                            if (!isFirstPage)
                             {
-                                /* Add a page break before every page except the first one */
-                                if (!isFirstPage)
-                                {
-                                    mainColumn.Item().PageBreak();
-                                }
-
-                                isFirstPage = false;
-
-                                /* Each page: 3 rows x 2 cols = 6 labels */
-                                for (int row = 0; row < 3; row++)
-                                {
-                                    mainColumn.Item().Row(rowContainter =>
-                                    {
-                                        rowContainter.Spacing(10);
-
-                                        for (int col = 0; col < 2; col++)
-                                        {
-                                            if (currentIndex < totalLabels)
-                                            {
-                                                int serial = serialNumbers[currentIndex++];
-
-                                                rowContainter.RelativeItem().Border(0.5F).Height(233).Padding(3).Element(label => ComposeLabel(label, serial));
-                                            }
-                                        }
-                                    });
-                                }
+                                mainColumn.Item().PageBreak();
                             }
-                        });
-                    });
-                })
-                .GeneratePdf(filePath);
 
-                OpenPdf(filePath);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error al generar el documento PDF: {ex.Message}", "Error al generar PDF", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+                            isFirstPage = false;
+
+                            /* Each page: 3 rows x 2 cols = 6 labels */
+                            for (int row = 0; row < 3; row++)
+                            {
+                                mainColumn.Item().Row(rowContainter =>
+                                {
+                                    rowContainter.Spacing(10);
+
+                                    for (int col = 0; col < 2; col++)
+                                    {
+                                        if (currentIndex < totalLabels)
+                                        {
+                                            int serial = serialNumbers[currentIndex++];
+
+                                            rowContainter.RelativeItem().Border(0.5F).Height(233).Padding(3).Element(label => ComposeLabel(label, serial, documentData));
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    });
+                });
+            })
+            .GeneratePdf(filePath);
         }
 
-        private void ComposeLabel(IContainer container, int serial)
+        private void ComposeLabel(IContainer container, int serial, LabelDocumentData documentData)
         {
             float _padding1 = 73;
             float _padding2 = 105.2F;
@@ -543,8 +604,8 @@ namespace EtiquetasArca
                     col.Item().Text("Importador y Reconstructor:");
                     col.Item().PaddingLeft(_padding1).Column(importer =>
                     {
-                        importer.Item().Text(CompanyLine1).Bold();
-                        importer.Item().Text(CompanyLine2).Bold();
+                        importer.Item().Text(documentData.CompanyLine1).Bold();
+                        importer.Item().Text(documentData.CompanyLine2).Bold();
                     });
 
                     col.Item().Text("");
@@ -553,9 +614,9 @@ namespace EtiquetasArca
                         r.RelativeItem(_row1Length).Text("Domicilio Fiscal:");
                         r.RelativeItem(_row2Length).Column(addr =>
                         {
-                            addr.Item().Text(FiscalAddressLine1);
-                            addr.Item().Text(FiscalAddressLine2);
-                            addr.Item().Text(FiscalAddressLine3);
+                            addr.Item().Text(documentData.FiscalAddressLine1);
+                            addr.Item().Text(documentData.FiscalAddressLine2);
+                            addr.Item().Text(documentData.FiscalAddressLine3);
                         });
                     });
 
@@ -563,39 +624,39 @@ namespace EtiquetasArca
 
                     col.Item().PaddingLeft(_padding2).Column(addr =>
                     {
-                        addr.Item().Text(AddressLine1);
-                        addr.Item().Text(AddressLine2);
-                        addr.Item().Text(AddressLine3);
+                        addr.Item().Text(documentData.AddressLine1);
+                        addr.Item().Text(documentData.AddressLine2);
+                        addr.Item().Text(documentData.AddressLine3);
                     });
 
                     col.Item().Row(r =>
                     {
                         r.RelativeItem(_row1Length).Text("Nombre del producto:").Bold();
-                        r.RelativeItem(_row2Length).Text(ImpProductName).Bold();
+                        r.RelativeItem(_row2Length).Text(documentData.ImpProductName).Bold();
                     });
 
                     col.Item().Row(r =>
                     {
                         r.RelativeItem(_row1Length).Text("Marca:").Bold();
-                        r.RelativeItem(_row2Length).Text(Brand).Bold();
+                        r.RelativeItem(_row2Length).Text(documentData.Brand).Bold();
                     });
 
                     col.Item().Row(r =>
                     {
                         r.RelativeItem(_row1Length).Text("Modelo:").Bold();
-                        r.RelativeItem(_row2Length).Text(Model).Bold();
+                        r.RelativeItem(_row2Length).Text(documentData.Model).Bold();
                     });
 
                     col.Item().Row(r =>
                     {
                         r.RelativeItem(_row1Length).Text("Serie:").Bold();
-                        r.RelativeItem(_row2Length).Text(Series).Bold();
+                        r.RelativeItem(_row2Length).Text(documentData.Series).Bold();
                     });
 
                     col.Item().Row(r =>
                     {
                         r.RelativeItem(_row1Length).Text("Especificaciones:");
-                        r.RelativeItem(_row2Length).Text(Specs);
+                        r.RelativeItem(_row2Length).Text(documentData.Specs);
                     });
 
                     col.Item().Row(r =>
@@ -606,6 +667,23 @@ namespace EtiquetasArca
                 });
             });
         }
+
+        private sealed record LabelDocumentData(
+            string CompanyLine1,
+            string CompanyLine2,
+            string FiscalAddressLine1,
+            string FiscalAddressLine2,
+            string FiscalAddressLine3,
+            string AddressLine1,
+            string AddressLine2,
+            string AddressLine3,
+            string ImpProductName,
+            string Brand,
+            string Model,
+            string Series,
+            uint SerialNumberStart,
+            uint SerialNumberEnd,
+            string Specs);
 
         private static void OpenPdf(string path)
         {
